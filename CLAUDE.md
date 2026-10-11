@@ -197,12 +197,12 @@ This merge records the upstream ancestry and adds the remaining changes:
 
 ### Fork-Specific Code Preserved
 
-- `android/build.gradle` - `implementation 'com.github.limpbrains:qr:v0.0.3'` unchanged.
+- `android/build.gradle` - QR dependency updated to `com.github.limpbrains:qr:0.7.2` (release v0.7.2).
 - `QRCodeAnalyzer.kt` - `QRDecoder.decode()` and the synchronous QR-only analysis preserved.
 - `CodeFormat.kt` / `CKCamera.kt` - No ML Kit conversions; string QR callback preserved.
 - Android face detection remains unsupported and emits `onFaceDetectionInstallStatus('unavailable')`.
 - `FacePayload.kt`, `ImageQRCodeDecoder.kt`, and the `detectQRCodeInImage` API/tests preserved.
-- The separate Kotlin QR upgrade is outside this sync.
+- QR library sources are maintained separately; this PR consumes the published v0.7.2 dependency.
 
 ### Validation
 
@@ -212,5 +212,7 @@ This merge records the upstream ancestry and adds the remaining changes:
 - `npm pack --dry-run --json --ignore-scripts` - PASSED; no examples, tests, or build output.
 - iOS native library: `xcodebuild` simulator Debug build (Xcode 26.3) - PASSED.
 - Android example: `assembleDebug` (Java 17), installed and launched on API 36 with Fabric; camera preview opened - PASSED.
+- QR v0.7.2 update: Android example `assembleRelease` (Java 17, arm64) - PASSED; Gradle resolves `com.github.limpbrains:qr:0.7.2`.
+- Local Maestro camera scan with the release APK decoded `Craig Wright Is Not Satoshi` on API 36 - PASSED (11 seconds); video recorded.
 - No `google.mlkit` or `com.google.android.gms` references in `android/` - VERIFIED.
-- Android source and the QR dependency unchanged from the current fork master - VERIFIED.
+- Android integration source remains unchanged; the QR dependency is upgraded to v0.7.2.
