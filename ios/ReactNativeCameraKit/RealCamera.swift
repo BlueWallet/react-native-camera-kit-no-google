@@ -195,9 +195,9 @@ class RealCamera: NSObject, CameraProtocol, AVCaptureMetadataOutputObjectsDelega
         self.update(zoom: self.zoom)
     }
 
-    func update(zoom z: Double?) {
+    func update(zoom zoomValue: Double?) {
         sessionQueue.async {
-            self.zoom = z == -1 ? nil : z
+            self.zoom = zoomValue == -1 ? nil : zoomValue
             guard let videoDevice = self.videoDeviceInput?.device else { return }
             guard let zoomWithNil = self.zoom else { return }
 
@@ -584,13 +584,13 @@ class RealCamera: NSObject, CameraProtocol, AVCaptureMetadataOutputObjectsDelega
                 fromMetadataOutputRect: CGRect(x: 0, y: 0, width: 1, height: 1))
             guard frameRect.width > 0, frameRect.height > 0 else { return }
 
-            let converted = payloads.map { p -> FaceDetectionPayload in
-                let layerX = frameRect.origin.x + p.boundsX * frameRect.width
-                let layerY = frameRect.origin.y + p.boundsY * frameRect.height
-                let layerW = p.boundsWidth * frameRect.width
-                let layerH = p.boundsHeight * frameRect.height
+            let converted = payloads.map { payload -> FaceDetectionPayload in
+                let layerX = frameRect.origin.x + payload.boundsX * frameRect.width
+                let layerY = frameRect.origin.y + payload.boundsY * frameRect.height
+                let layerW = payload.boundsWidth * frameRect.width
+                let layerH = payload.boundsHeight * frameRect.height
                 return FaceDetectionPayload(
-                    id: p.id, yaw: p.yaw, pitch: p.pitch, roll: p.roll,
+                    id: payload.id, yaw: payload.yaw, pitch: payload.pitch, roll: payload.roll,
                     boundsX: Double(layerX / layerSize.width),
                     boundsY: Double(layerY / layerSize.height),
                     boundsWidth: Double(layerW / layerSize.width),
