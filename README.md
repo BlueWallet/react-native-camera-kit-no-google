@@ -342,6 +342,16 @@ If you are using Expo Managed Workflow, you can use this library with a third-pa
 
 ## Contributing
 
+The [Android camera QR test](e2e/android/scan-qr.yaml) uses Maestro to check the
+decoded value `Craig Wright Is Not Satoshi` through the emulator's `imagefile`
+rear camera. CI uploads an MP4 recording, JUnit results, screenshots, and logs.
+To run locally with a bundled release example APK and an emulator configured
+with `-camera-back imagefile:$PWD/e2e/android/fixtures/qr.png`:
+
+```sh
+node e2e/android/run.mjs --serial emulator-5556
+```
+
 - Pull Requests are welcome, if you open a pull request we will do our best to get to it in a timely manner
 - Pull Request Reviews are even more welcome! we need help testing, reviewing, and updating open PRs
 - If you are interested in contributing more actively, please contact us.

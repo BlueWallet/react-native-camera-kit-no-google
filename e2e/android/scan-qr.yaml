@@ -1,0 +1,17 @@
+appId: com.example.reactnativecamerakit
+name: Decode a QR code through the Android camera
+---
+- launchApp:
+    clearState: true
+    permissions:
+      all: allow
+- tapOn:
+    id: open-barcode-scanner
+- extendedWaitUntil:
+    visible:
+      id: barcode-result
+      text: Craig Wright Is Not Satoshi
+    timeout: 30000
+- assertVisible:
+    id: barcode-result
+    text: Craig Wright Is Not Satoshi
