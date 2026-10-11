@@ -168,6 +168,9 @@ class CKCameraManager(context: ReactApplicationContext) : SimpleViewManager<CKCa
         view.setAllowedBarcodeTypes(types)
     }
 
+    // Device IDs are macOS-only; retain the mobile cameraType behavior.
+    override fun setCameraDeviceId(view: CKCamera?, value: String?) = Unit
+
     // Methods only available on iOS
     override fun setRatioOverlay(view: CKCamera?, value: String?) = Unit
 

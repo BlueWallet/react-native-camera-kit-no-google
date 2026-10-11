@@ -24,7 +24,8 @@
     "start": "watchman watch-del-all && node node_modules/react-native/local-cli/cli.js start",
     "codegen": "rm -rf .codegen/ && react-native codegen --verbose --path . --platform ios --outputPath .codegen --source library && react-native codegen --verbose --path . --platform android --outputPath .codegen --source library",
     "bootstrap": "cd example/ && bundle install && yarn && cd ios/ && bundle exec pod install",
-    "bootstrap-linux": "cd example/ && yarn"
+    "bootstrap-linux": "cd example/ && yarn",
+    "test:macos": "scripts/test-macos.sh"
   },
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -47,7 +48,9 @@
     "!src/**/__tests__",
     "!src/**/*.test.*",
     "!src/**/*.spec.*",
-    "ReactNativeCameraKit.podspec"
+    "ReactNativeCameraKit.podspec",
+    "macos/ReactNativeCameraKit",
+    "react-native.config.js"
   ],
   "license": "MIT",
   "dependencies": {},

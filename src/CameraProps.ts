@@ -61,6 +61,10 @@ export type OnFaceDetectionInstallStatusData = {
 };
 
 export interface CameraProps extends ViewProps {
+  /** macOS only. Omit to use the system default camera. */
+  cameraDeviceId?: string;
+  /** macOS only. Refresh getCameraDevices() after this event. */
+  onCameraDevicesChanged?: (event: { nativeEvent: {} }) => void;
   // Behavior
   flashMode?: FlashMode;
   focusMode?: FocusMode;
@@ -125,7 +129,7 @@ export interface CameraProps extends ViewProps {
    * ```
    */
   onZoom?: (event: OnZoom) => void;
-  /** **Android only**. Triggered when camera fails to initialize */
+  /** Triggered when the camera fails to initialize (Android/macOS), or disconnects (macOS). */
   onError?: (event: { nativeEvent: { errorMessage: string } }) => void;
   // Barcode only
   scanBarcode?: boolean;

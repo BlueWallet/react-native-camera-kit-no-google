@@ -61,6 +61,70 @@ The Android QR decoder is based on:
   </tr>
 </table>
 
+## macOS (QR scanning)
+
+An AppKit backend is available for **macOS 14+**, using AVFoundation preview and
+Apple Vision QR decoding. It requires **Fabric and TurboModules**. The standalone
+[example-macos](example-macos/README.md) pins `react-native-macos 0.83.0`, React
+Native `0.83.10` and React `19.2.0`.
+
+Follow the [Microsoft installation guide](https://microsoft.github.io/react-native-macos/docs/getting-started)
+to create a macOS host. Install this package, run CocoaPods with the new architecture
+enabled, add `NSCameraUsageDescription` to Info.plist and the
+`com.apple.security.device.camera` entitlement to your sandboxed app. Add
+`NSCameraUseContinuityCameraDeviceType = true` to discover Continuity Cameras.
+The podspec chooses separate iOS/macOS sources and autolinks the Fabric component
+and macOS TurboModule. No mobile source changes are required in your app.
+
+| API | macOS behavior |
+| --- | --- |
+| `Camera`, `resizeMode` | AppKit preview; `cover` (default) or `contain`, follows window size |
+| `scanBarcode`, `onReadCode` | QR only; event contains `codeStringValue` and `codeFormat: 'qr'` |
+| `scanThrottleDelay` | Minimum event interval in ms, default 2000; use 100 for animated QR |
+| `allowedBarcodeTypes` | Defaults to `['qr']`; an explicit list without `qr` (including `[]`) emits `onError` and disables scanning |
+| `cameraDeviceId?: string` | Omit for the system default; unavailable explicit selection emits `onError`, with no fallback |
+| `getCameraDevices()` | `Promise<Array<{id: string; name: string}>>`, AVFoundation video devices; rejects on iOS/Android |
+| `onCameraDevicesChanged` | Mounted camera emits on connection/disconnection; call `getCameraDevices()` again |
+| `requestDeviceCameraAuthorization()`, `checkDeviceCameraAuthorizationStatus()` | Named exports and camera ref methods; resolve a boolean |
+| `detectQRCodeInImage(base64)` | QR string or `null`; accepts raw base64 or a data URI, respects image orientation; rejects invalid images |
+| `onError` | `{nativeEvent: {errorMessage: string}}` for permission, startup, device and scanning errors |
+| `capture()` | Rejects with an unsupported-operation message |
+| Photo capture, face detection | Not supported in macOS v1 |
+| Flash, torch, focus, zoom, motion/orientation and mobile overlay props | No effect on macOS |
+
+The named permission helpers also work on iOS. On Android they reject; use React
+Native `PermissionsAndroid` (the existing Android ref permission methods remain unsupported).
+
+Repeated QR values are emitted again after the throttle interval. The library does
+not assemble animated QR sequences or permanently suppress duplicates; assemble
+frames in the application. Preview mirroring does not change decoded data. Capture
+stops on unmount/window close, and results from an old camera/session are discarded.
+
+```tsx
+import {
+  Camera, getCameraDevices, requestDeviceCameraAuthorization,
+} from 'react-native-camera-kit-no-google';
+
+// Request permission before mounting the preview.
+const granted = await requestDeviceCameraAuthorization();
+const devices = await getCameraDevices();
+// In your component, after permission is granted:
+<Camera
+  style={{flex: 1}}
+  cameraDeviceId={selectedDeviceId} // undefined = system default
+  scanBarcode
+  scanThrottleDelay={100}
+  resizeMode="contain"
+  onCameraDevicesChanged={() => getCameraDevices().then(setDevices)}
+  onReadCode={({nativeEvent}) => handleQRFrame(nativeEvent.codeStringValue)}
+  onError={({nativeEvent}) => setError(nativeEvent.errorMessage)}
+/>;
+```
+
+Run the independent example with `cd example-macos && npm ci && npm run pods`,
+then `npm start` and `npm run macos` in separate terminals. See its README for
+build commands and the hardware verification checklist.
+
 ## Installation (RN > 0.60)
 
 ```bash

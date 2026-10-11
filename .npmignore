@@ -32,3 +32,6 @@ scripts/
 **/__tests__/
 **/*.test.*
 **/*.spec.*
+
+example-macos/
+macos/Tests/
