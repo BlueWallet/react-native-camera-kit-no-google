@@ -164,7 +164,7 @@ yarn release:beta
 yarn release:local
 ```
 
-The library is published to npm as `react-native-camera-kit` with the `files` array in package.json controlling what gets included in the published bundle.
+The library is published to npm as `react-native-camera-kit-no-google` with the `files` array in package.json controlling what gets included in the published bundle.
 
 ## Important Configuration Details
 
@@ -178,40 +178,39 @@ The library is published to npm as `react-native-camera-kit` with the `files` ar
 
 ## Camera Kit Sync State
 
-**Last synchronized upstream commit**: 8e5149a6e6d3902ae87dad50da0d06ec2c61d2b8
-**Upstream version**: 17.0.1
-**Fork version**: 17.0.3
-**Last sync date**: 2026-01-17
+**Last synchronized upstream commit**: a2a81cee8995c831aca472836e2be446994ba070
+**Upstream version**: 18.0.1
+**Fork version**: 18.0.0
+**Last sync date**: 2026-10-11
 **Sync status**: success
+**Fork repository**: https://github.com/BlueWallet/react-native-camera-kit-no-google
 
-### Changes Synced (upstream v16.2.0 -> v17.0.1)
+### Changes Synced (upstream v17.0.1 -> v18.0.1)
 
-**Key changes from upstream**:
-- Replaced `iOsSleepBeforeStarting` (Int) with `iOsDeferredStart` (Bool) for iOS camera startup optimization
-- iOS 26+ deferred start support via `AVCaptureOutput.deferredStartEnabled`
-- Improved stress test logging with elapsed time tracking
-- Various iOS formatting and code organization improvements
-
-**Files synced (16 files)**:
-- All iOS Swift files (CameraView.swift, RealCamera.swift, SimulatorCamera.swift, CameraProtocol.swift)
-- CKCameraViewComponentView.mm (Objective-C++ bridge)
-- TypeScript layer (Camera.ios.tsx, CameraProps.ts, CameraNativeComponent.ts)
-- Example app improvements (App.tsx, BarcodeScreenExample.tsx)
-- README.md with updated props documentation
+Face detection on iOS and its public props were already carried by the fork's manual v18 sync.
+This merge records the upstream ancestry and adds the remaining changes:
+- Share one CoreMotion motion manager and queue, and use a weak capture in the accelerometer handler.
+- Adopt upstream npm pack/publish scripts and exclude build output, tests, examples, and local tooling from packages.
+- Apply the upstream example capture-button spacing adjustment.
+- Update repository, CocoaPods source, and README links to BlueWallet.
+- Keep the fork package version at 18.0.0; no release or version bump is part of this sync.
 
 ### Fork-Specific Code Preserved
 
-All QR-only Android architecture preserved:
-- `android/build.gradle` - Uses `implementation 'com.github.limpbrains:qr:v0.0.3'`
-- `android/src/main/java/com/rncamerakit/QRCodeAnalyzer.kt` - Uses `QRDecoder.decode()` from limpbrains/qr
-- `android/src/main/java/com/rncamerakit/CodeFormat.kt` - Simplified enum (no ML Kit conversions)
-- `android/src/main/java/com/rncamerakit/CKCamera.kt` - String callback `onQRCodeDetected(String)`
+- `android/build.gradle` - `implementation 'com.github.limpbrains:qr:v0.0.3'` unchanged.
+- `QRCodeAnalyzer.kt` - `QRDecoder.decode()` and the synchronous QR-only analysis preserved.
+- `CodeFormat.kt` / `CKCamera.kt` - No ML Kit conversions; string QR callback preserved.
+- Android face detection remains unsupported and emits `onFaceDetectionInstallStatus('unavailable')`.
+- `FacePayload.kt`, `ImageQRCodeDecoder.kt`, and the `detectQRCodeInImage` API/tests preserved.
+- The separate Kotlin QR upgrade is outside this sync.
 
 ### Validation
 
-- `yarn build` - PASSED
-- `yarn lint` - PASSED
-- `yarn test` - PASSED
-- No `google.mlkit` references in android/ - VERIFIED
-- `limpbrains/qr` dependency present - VERIFIED
-- `QRDecoder.decode()` preserved - VERIFIED
+- `yarn build` - PASSED.
+- `yarn lint` - PASSED.
+- `yarn test --runInBand --watch=false` - 4 passed, 1 existing TODO.
+- `npm pack --dry-run --json --ignore-scripts` - PASSED; no examples, tests, or build output.
+- iOS native library: `xcodebuild` simulator Debug build (Xcode 26.3) - PASSED.
+- Android example: `assembleDebug` (Java 17), installed and launched on API 36 with Fabric; camera preview opened - PASSED.
+- No `google.mlkit` or `com.google.android.gms` references in `android/` - VERIFIED.
+- Android source and the QR dependency unchanged from the current fork master - VERIFIED.

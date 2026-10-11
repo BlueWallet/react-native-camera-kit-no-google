@@ -56,8 +56,16 @@ class RealCamera: NSObject, CameraProtocol, AVCaptureMetadataOutputObjectsDelega
 
     // orientation
     private var deviceOrientation = UIDeviceOrientation.unknown
-    private var motionManager: CMMotionManager?
     private var orientationObserver: NSObjectProtocol?
+
+    #if !targetEnvironment(macCatalyst)
+        // One CMMotionManager for the whole app, deliberately never deallocated. Destroying one
+        // races CoreMotion's own source cancellation: the dealloc blocks in the caller while
+        // CoreMotion's run loop thread and the dispatch source dispose handlers touch memory the
+        // cancellation has already freed.
+        private static let motionManager = CMMotionManager()
+        private static let motionQueue = OperationQueue()
+    #endif
 
     // KVO observation
     private var adjustingFocusObservation: NSKeyValueObservation?
@@ -103,7 +111,7 @@ class RealCamera: NSObject, CameraProtocol, AVCaptureMetadataOutputObjectsDelega
         }
 
         #if !targetEnvironment(macCatalyst)
-            motionManager?.stopAccelerometerUpdates()
+            Self.motionManager.stopAccelerometerUpdates()
 
             NotificationCenter.default.removeObserver(
                 self, name: UIDevice.orientationDidChangeNotification, object: UIDevice.current)
@@ -127,7 +135,7 @@ class RealCamera: NSObject, CameraProtocol, AVCaptureMetadataOutputObjectsDelega
             self.cameraPreview.session = self.session
             self.cameraPreview.previewLayer.videoGravity = .resizeAspect
 
-            self.initializeMotionManager()
+            self.startMotionUpdates()
 
             // Setup the capture session.
             // In general, it is not safe to mutate an AVCaptureSession or any of its inputs, outputs, or connections from multiple threads at the same time.
@@ -800,14 +808,15 @@ class RealCamera: NSObject, CameraProtocol, AVCaptureMetadataOutputObjectsDelega
 
     // MARK: - Private device orientation from accelerometer
 
-    private func initializeMotionManager() {
+    private func startMotionUpdates() {
         #if !targetEnvironment(macCatalyst)
-            motionManager = CMMotionManager()
-            motionManager?.accelerometerUpdateInterval = 0.2
-            motionManager?.gyroUpdateInterval = 0.2
-            motionManager?.startAccelerometerUpdates(
-                to: OperationQueue(),
-                withHandler: { (accelerometerData, error) -> Void in
+            Self.motionManager.accelerometerUpdateInterval = 0.2
+            Self.motionManager.gyroUpdateInterval = 0.2
+            Self.motionManager.startAccelerometerUpdates(
+                to: Self.motionQueue,
+                withHandler: { [weak self] (accelerometerData, error) -> Void in
+                    guard let self else { return }
+
                     guard error == nil else {
                         print("\(error!)")
                         return

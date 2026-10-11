@@ -1,12 +1,34 @@
+# Note: Yarn classic (`yarn pack` / `yarn publish`) does not honor this file
+# or package.json "files". Releases use npm pack/publish (see release scripts).
+# Presence of .npmignore also means npm ignores .gitignore during pack, so
+# keep exclusions here in sync with anything that must not ship.
+
 node_modules/
 .codegen/
-old-example/
 example/
+old-example/
 example-js-code/
 example-ios/
 example-android/
 android/build/
+android/.idea/
+android/local.properties
+android/gradle/
+android/gradlew
+android/gradlew.bat
 img/
 ios/lib/DerivedData/
 images/
 docs/
+scripts/
+.github/
+.vscode/
+.bundle/
+.pack-stash/
+*.tgz
+**/.DS_Store
+**/xcuserdata/
+**/*.xcuserstate
+**/__tests__/
+**/*.test.*
+**/*.spec.*

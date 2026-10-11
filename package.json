@@ -2,7 +2,7 @@
   "name": "react-native-camera-kit-no-google",
   "repository": {
     "type": "git",
-    "url": "https://github.com/limpbrains/react-native-camera-kit-no-google.git"
+    "url": "https://github.com/BlueWallet/react-native-camera-kit-no-google.git"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
@@ -17,9 +17,9 @@
     "test": "jest",
     "lint": "yarn eslint -c .eslintrc.js",
     "check-ios": "scripts/check-ios.sh",
-    "release": "yarn clean && yarn build && yarn publish --verbose",
-    "release:beta": "yarn clean && yarn build && yarn publish --tag beta --verbose",
-    "release:local": "yarn clean && yarn build && tmp=$(mktemp) && yarn pack --filename $tmp.tar.gz && open -R $tmp.tar.gz",
+    "release": "yarn clean && yarn build && yarn version && npm publish --verbose",
+    "release:beta": "yarn clean && yarn build && yarn version && npm publish --tag beta --verbose",
+    "release:local": "yarn clean && yarn build && tgz=$(npm pack --silent) && open -R \"$PWD/$tgz\"",
     "prepack": "rm -rf android/build build",
     "start": "watchman watch-del-all && node node_modules/react-native/local-cli/cli.js start",
     "codegen": "rm -rf .codegen/ && react-native codegen --verbose --path . --platform ios --outputPath .codegen --source library && react-native codegen --verbose --path . --platform android --outputPath .codegen --source library",
@@ -34,9 +34,19 @@
   "files": [
     "android",
     "!android/build",
+    "!android/.idea",
+    "!android/local.properties",
+    "!android/gradle",
+    "!android/gradlew",
+    "!android/gradlew.bat",
     "dist",
     "ios",
+    "!ios/**/xcuserdata",
+    "!ios/**/*.xcuserstate",
     "src",
+    "!src/**/__tests__",
+    "!src/**/*.test.*",
+    "!src/**/*.spec.*",
     "ReactNativeCameraKit.podspec"
   ],
   "license": "MIT",
