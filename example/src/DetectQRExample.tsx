@@ -1,10 +1,21 @@
 import { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Image, ScrollView, ActivityIndicator } from 'react-native';
-import { launchImageLibrary } from 'react-native-image-picker';
-import { detectQRCodeInImage } from '../../src';
+import {
+  Platform,
+  TextInput,
+  Button,
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  Image,
+  ScrollView,
+  ActivityIndicator,
+} from 'react-native';
+import { detectQRCodeInImage } from 'react-native-camera-kit-no-google';
 import SafeAreaView from './SafeAreaView';
 
 const DetectQRExample = ({ onBack }: { onBack: () => void }) => {
+  const [base64Input, setBase64Input] = useState('');
   const [imageUri, setImageUri] = useState<string | undefined>();
   const [result, setResult] = useState<string | undefined>();
   const [error, setError] = useState<string | undefined>();
@@ -14,6 +25,7 @@ const DetectQRExample = ({ onBack }: { onBack: () => void }) => {
     setResult(undefined);
     setError(undefined);
 
+    const { launchImageLibrary } = await import('react-native-image-picker');
     const response = await launchImageLibrary({
       mediaType: 'photo',
       selectionLimit: 1,
@@ -53,9 +65,38 @@ const DetectQRExample = ({ onBack }: { onBack: () => void }) => {
       </SafeAreaView>
 
       <ScrollView contentContainerStyle={styles.content}>
-        <TouchableOpacity style={styles.pickButton} onPress={onPickImage}>
-          <Text style={styles.pickButtonText}>Pick Image</Text>
-        </TouchableOpacity>
+        {Platform.OS === 'macos' ? (
+          <View style={{ width: '100%' }}>
+            <TextInput
+              multiline
+              value={base64Input}
+              onChangeText={setBase64Input}
+              placeholder="Paste a base64 image or data URI"
+              placeholderTextColor="#aaa"
+              style={{ color: 'white', minHeight: 100, borderColor: '#777', borderWidth: 1, padding: 12 }}
+            />
+            <Button
+              title="Decode QR image"
+              disabled={loading || !base64Input}
+              onPress={async () => {
+                setLoading(true);
+                setError(undefined);
+                setResult(undefined);
+                try {
+                  setResult((await detectQRCodeInImage(base64Input)) ?? '(no QR code found)');
+                } catch (e) {
+                  setError(String(e));
+                } finally {
+                  setLoading(false);
+                }
+              }}
+            />
+          </View>
+        ) : (
+          <TouchableOpacity style={styles.pickButton} onPress={onPickImage}>
+            <Text style={styles.pickButtonText}>Pick Image</Text>
+          </TouchableOpacity>
+        )}
 
         {imageUri && <Image source={{ uri: imageUri }} style={styles.preview} resizeMode="contain" />}
 

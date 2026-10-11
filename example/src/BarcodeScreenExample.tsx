@@ -9,9 +9,9 @@ import {
   useWindowDimensions,
   Vibration,
 } from 'react-native';
-import Camera from '../../src/Camera';
-import { type CameraApi, CameraType } from '../../src/types';
-import { Orientation } from '../../src';
+import {Camera} from 'react-native-camera-kit-no-google';
+import { type CameraApi, CameraType } from 'react-native-camera-kit-no-google';
+import { Orientation } from 'react-native-camera-kit-no-google';
 import SafeAreaView from './SafeAreaView';
 
 const flashImages = {
@@ -53,12 +53,12 @@ const BarcodeExample = ({ onBack }: { onBack: () => void }) => {
   // FPS counter using requestAnimationFrame
   useEffect(() => {
     let frameCount = 0;
-    let lastTime = performance.now();
+    let lastTime = Date.now();
     let animationId: number;
 
     const measureFps = () => {
       frameCount++;
-      const now = performance.now();
+      const now = Date.now();
       const elapsed = now - lastTime;
 
       if (elapsed >= 1000) {

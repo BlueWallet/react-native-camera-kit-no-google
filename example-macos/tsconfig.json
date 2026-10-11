@@ -1,5 +1,0 @@
-{
-  "extends": "@react-native/typescript-config",
-  "compilerOptions": { "paths": { "react-native": ["./node_modules/react-native-macos"] } },
-  "include": ["App.tsx"]
-}

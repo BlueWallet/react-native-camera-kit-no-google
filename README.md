@@ -64,8 +64,8 @@ The Android QR decoder is based on:
 ## macOS (QR scanning)
 
 An AppKit backend is available for **macOS 14+**, using AVFoundation preview and
-Apple Vision QR decoding. It requires **Fabric and TurboModules**. The standalone
-[example-macos](example-macos/README.md) pins `react-native-macos 0.83.0`, React
+Apple Vision QR decoding. It requires **Fabric and TurboModules**. The shared iOS, Android and macOS
+[example](example/README.md) pins `react-native-macos 0.83.0`, React
 Native `0.83.10` and React `19.2.0`.
 
 Follow the [Microsoft installation guide](https://microsoft.github.io/react-native-macos/docs/getting-started)
@@ -121,8 +121,9 @@ const devices = await getCameraDevices();
 />;
 ```
 
-Run the independent example with `cd example-macos && npm ci && npm run pods`,
-then `npm start` and `npm run macos` in separate terminals. See its README for
+Run the shared example with `yarn --cwd example install --frozen-lockfile` and
+`yarn --cwd example pods:macos`, then `yarn --cwd example start` and
+`yarn --cwd example macos` in separate terminals. See its README for
 build commands and the hardware verification checklist.
 
 ## Installation (RN > 0.60)
@@ -227,8 +228,19 @@ Add the following usage descriptions to your `Info.plist` (usually found at: `io
 
 ## Running the example project
 
-- `yarn bootstrap`
-- `yarn example ios` or `yarn example android`
+One app, JavaScript entry point and Yarn lockfile serve all three platforms.
+
+```sh
+yarn install --frozen-lockfile
+yarn --cwd example install --frozen-lockfile
+yarn --cwd example pods:ios    # iOS only
+yarn --cwd example pods:macos  # macOS only
+yarn --cwd example start
+```
+
+In another terminal, run `yarn --cwd example ios`, `yarn --cwd example android`,
+or `yarn --cwd example macos`. See [example/README.md](example/README.md) for
+prerequisites, build commands and camera checks.
 
 ## Components
 

@@ -1,3 +1,4 @@
+ENV['RN_PLATFORM'] = 'macos'
 ENV['RCT_NEW_ARCH_ENABLED'] = '1'
 require 'pathname'
 
@@ -12,9 +13,6 @@ prepare_react_native_project!
 target 'CameraKitMacOS-macOS' do
   platform :macos, '14.0'
   use_native_modules!
-
-  # Flags change depending on the env values.
-  flags = get_default_flags()
 
   use_react_native!(
     :path => '../node_modules/react-native-macos',

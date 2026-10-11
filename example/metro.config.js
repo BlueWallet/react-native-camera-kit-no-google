@@ -1,39 +1,17 @@
 const path = require('path');
-const {getDefaultConfig, mergeConfig} = require('@react-native/metro-config');
-const escape = require('escape-string-regexp');
-const pak = require('../package.json');
+const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
 
-const root = path.resolve(__dirname, '..');
-
-const modules = Object.keys({
-  ...pak.peerDependencies,
-});
-
-const nodeModulesPaths = [path.resolve(path.join(__dirname, './node_modules'))];
-
-/**
- * Metro configuration
- * https://reactnative.dev/docs/metro
- *
- * @type {import('@react-native/metro-config').MetroConfig}
- */
-const config = {
-  projectRoot: __dirname,
-  watchFolders: [root],
-
-  // We need to make sure that only one version is loaded for peerDependencies
-  // So we blacklist them at the root, and alias them to the versions in example's node_modules
+module.exports = mergeConfig(getDefaultConfig(__dirname), {
+  watchFolders: [path.resolve(__dirname, '..')],
   resolver: {
-    blacklistRE: modules.map(
-      (m) => new RegExp(`^${escape(path.join(root, 'node_modules', m))}\\/.*$`)
-    ),
-
-    extraNodeModules: modules.reduce((acc, name) => {
-      acc[name] = path.join(__dirname, 'node_modules', name);
-      return acc;
-    }, {}),
-    nodeModulesPaths,
+    platforms: ['ios', 'android', 'macos'],
+    nodeModulesPaths: [path.join(__dirname, 'node_modules')],
+    disableHierarchicalLookup: true,
+    resolveRequest(context, name, platform) {
+      if (platform === 'macos' && (name === 'react-native' || name.startsWith('react-native/'))) {
+        name = name.replace(/^react-native/, 'react-native-macos');
+      }
+      return context.resolveRequest(context, name, platform);
+    },
   },
-};
-
-module.exports = mergeConfig(getDefaultConfig(__dirname), config);
+});

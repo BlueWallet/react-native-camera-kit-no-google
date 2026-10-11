@@ -54,7 +54,7 @@ struct ReactNativeView: NSViewRepresentable {
   let factory: RCTReactNativeFactory
 
   func makeNSView(context: Context) -> NSView {
-    factory.rootViewFactory.view(withModuleName: "CameraKitMacOS")
+    factory.rootViewFactory.view(withModuleName: "CameraKitExample")
   }
 
   func updateNSView(_ nsView: NSView, context: Context) {}
