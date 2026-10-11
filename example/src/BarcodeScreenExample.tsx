@@ -225,7 +225,7 @@ const BarcodeExample = ({ onBack }: { onBack: () => void }) => {
         </View>
 
         <View style={styles.barcodeContainer}>
-          <Text numberOfLines={1} style={styles.textStyle}>
+          <Text testID="barcode-result" style={styles.textStyle}>
             {barcode}
           </Text>
         </View>
