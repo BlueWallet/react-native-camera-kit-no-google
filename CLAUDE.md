@@ -180,7 +180,7 @@ The library is published to npm as `react-native-camera-kit-no-google` with the 
 
 **Last synchronized upstream commit**: a2a81cee8995c831aca472836e2be446994ba070
 **Upstream version**: 18.0.1
-**Fork version**: 18.0.0
+**Fork version**: 18.0.1
 **Last sync date**: 2026-10-11
 **Sync status**: success
 **Fork repository**: https://github.com/BlueWallet/react-native-camera-kit-no-google
@@ -193,7 +193,7 @@ This merge records the upstream ancestry and adds the remaining changes:
 - Adopt upstream npm pack/publish scripts and exclude build output, tests, examples, and local tooling from packages.
 - Apply the upstream example capture-button spacing adjustment.
 - Update repository, CocoaPods source, and README links to BlueWallet.
-- Keep the fork package version at 18.0.0; no release or version bump is part of this sync.
+- Bump the fork package version to 18.0.1 to match upstream.
 
 ### Fork-Specific Code Preserved
 
