@@ -98,3 +98,5 @@ android/generated/ReactCodegen.podspec
 example/.rock/cache/
 
 .claude/
+
+e2e/artifacts/
