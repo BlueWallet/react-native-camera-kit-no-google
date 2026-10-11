@@ -30,9 +30,9 @@ this example independently of the mobile example. `Podfile` enables the new
 architecture explicitly. Metro maps React Native imports to `react-native-macos`
 and resolves dependencies from this app, including imports inside the linked library.
 
-Click **Запросить разрешение** to request access. If access was denied, enable
+Click **Request permission** to request access. If access was denied, enable
 CameraKitMacOS under System Settings → Privacy & Security → Camera and return to
-the app. It rechecks authorization when active. **Системная** uses the AVFoundation
+the app. It rechecks authorization when active. **System default** uses the AVFoundation
 system default; a disconnected explicit selection stays selected until you change it.
 
 The camera entitlement and usage description are already included. Continuity

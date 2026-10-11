@@ -38,39 +38,39 @@ export default function App() {
   }, [refresh]);
 
   const disconnected = deviceID !== undefined && !devices.some(d => d.id === deviceID);
-  const status = !permission ? 'Нет разрешения' : disconnected ? 'Камера отключена' : devices.length === 0 ? 'Нет камер' : visible ? 'Камера открыта' : 'Камера закрыта';
+  const status = !permission ? 'Camera permission not granted' : disconnected ? 'Camera disconnected' : devices.length === 0 ? 'No cameras available' : visible ? 'Camera open' : 'Camera closed';
 
   return (
     <View style={styles.screen}>
       <Text style={styles.title}>CameraKit · macOS · QR</Text>
       <View style={styles.row}>
         <Text style={styles.text}>{status}</Text>
-        <Button title="Запросить разрешение" onPress={async () => {
+        <Button title="Request permission" onPress={async () => {
           try {
             const allowed = await requestDeviceCameraAuthorization();
             setPermission(allowed);
-            setError(allowed ? '' : 'Разрешите доступ в System Settings → Privacy & Security → Camera.');
+            setError(allowed ? '' : 'Allow camera access in System Settings → Privacy & Security → Camera.');
             await refresh();
           } catch (e) { setError(String(e)); }
         }} />
-        <Button title="Обновить камеры" onPress={refresh} />
-        <Button title={visible ? 'Закрыть камеру' : 'Открыть камеру'} onPress={() => { setVisible(!visible); setError(''); }} />
+        <Button title="Refresh cameras" onPress={refresh} />
+        <Button title={visible ? 'Close camera' : 'Open camera'} onPress={() => { setVisible(!visible); setError(''); }} />
       </View>
       <ScrollView horizontal style={styles.devices}>
-        {[{id: '', name: 'Системная'}, ...devices].map(device => (
+        {[{id: '', name: 'System default'}, ...devices].map(device => (
           <Button key={device.id} title={`${(deviceID ?? '') === device.id ? '✓ ' : ''}${device.name}`}
             onPress={() => { setDeviceID(device.id || undefined); setError(''); }} />
         ))}
       </ScrollView>
       <View style={styles.row}>
         <Switch value={scanning} onValueChange={setScanning} />
-        <Text style={styles.text}>Сканирование · интервал 100 мс</Text>
-        <Button title={`Режим: ${resizeMode}`} onPress={() => setResizeMode(resizeMode === 'cover' ? 'contain' : 'cover')} />
+        <Text style={styles.text}>Scanning · 100 ms interval</Text>
+        <Button title={`Preview mode: ${resizeMode}`} onPress={() => setResizeMode(resizeMode === 'cover' ? 'contain' : 'cover')} />
       </View>
       <Text style={styles.error}>{error}</Text>
       <View style={styles.preview}>
         {permission && visible ? (
-          <Suspense fallback={<Text style={styles.text}>Загрузка…</Text>}>
+          <Suspense fallback={<Text style={styles.text}>Loading…</Text>}>
             <Camera style={StyleSheet.absoluteFill} cameraDeviceId={deviceID}
               scanBarcode={scanning} scanThrottleDelay={100} resizeMode={resizeMode}
               allowedBarcodeTypes={['qr']} onCameraDevicesChanged={refresh}
@@ -83,9 +83,9 @@ export default function App() {
           </Suspense>
         ) : <Text style={styles.placeholder}>{status}</Text>}
       </View>
-      <Text style={styles.text}>Событий: {events} · Последний QR:</Text>
+      <Text style={styles.text}>Events: {events} · Last QR:</Text>
       <ScrollView style={styles.result}><Text selectable style={styles.text}>{lastQR}</Text></ScrollView>
-      <Text style={styles.text}>Анимированные QR: каждый кадр передаётся приложению; сборка последовательности выполняется приложением.</Text>
+      <Text style={styles.text}>Animated QR: each frame is sent to the app; the app assembles the sequence.</Text>
     </View>
   );
 }
