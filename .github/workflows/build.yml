@@ -20,7 +20,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '2.7.4'
+          ruby-version: '3.4'
       - name: Checkout
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - name: Set up Node.js
@@ -33,6 +33,8 @@ jobs:
             example/yarn.lock
       - name: Install modules
         run: yarn install --frozen-lockfile
+      - name: Install CocoaPods
+        run: gem install cocoapods -v 1.17.0 --no-document
       - name: Install example
         run: yarn bootstrap
       - name: Build
@@ -62,11 +64,37 @@ jobs:
       - name: Install modules
         run: yarn install --frozen-lockfile
       - name: Install example
-        # The example's postinstall runs CocoaPods, which requires macOS.
-        run: yarn --cwd example install --frozen-lockfile --ignore-scripts
+        run: yarn --cwd example install --frozen-lockfile
       - name: Set up Android SDK and build tools
         uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd # v4
         with:
           packages: platform-tools platforms;android-36 build-tools;36.0.0 ndk;27.1.12297006 cmake;3.22.1
       - name: Build
         run: cd example/android && ./gradlew assembleDebug -PreactNativeArchitectures=x86_64 --max-workers=2
+
+  build-example-macos:
+    runs-on: macos-15
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.3.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22'
+          cache: yarn
+          cache-dependency-path: |
+            yarn.lock
+            example/yarn.lock
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.4'
+      - name: Install CocoaPods
+        run: gem install cocoapods -v 1.17.0 --no-document
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile && yarn bootstrap:macos
+      - name: Typecheck
+        run: yarn --cwd example typecheck
+      - name: Native tests
+        run: yarn test:macos
+      - name: Build
+        run: yarn --cwd example build:macos

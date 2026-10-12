@@ -44,6 +44,8 @@ type OnFaceDetectedData = {
 // We have to use -1 until RN Fabric (New Arch for view components) supports optional values:
 // https://github.com/facebook/react-native/issues/49920#issuecomment-3237917813
 export interface NativeProps extends ViewProps {
+  cameraDeviceId?: string;
+  onCameraDevicesChanged?: DirectEventHandler<{}>;
   flashMode?: string;
   focusMode?: string;
   maxPhotoQualityPrioritization?: string;

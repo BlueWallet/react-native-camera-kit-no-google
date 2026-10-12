@@ -1,22 +1,26 @@
 {
   "name": "react-native-camera-kit-example",
-  "description": "Example app for react-native-camera-kit",
+  "description": "CameraKit example for iOS, Android and macOS",
   "version": "0.0.1",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "lint": "eslint .",
-    "start": "react-native start --client-logs",
-    "reinstall": "rm -rf ios/Pods && bundle && rm -rf ../node_modules/ ../android/build/ ./node_modules/ ./ios/Pods/ ./android/app/build/ ./android/app/.cxx && cd ../ && yarn && cd example && yarn",
+    "start": "react-native start",
     "reverse": "adb reverse tcp:8081 tcp:8081",
-    "postinstall": "cd ios && bundle exec pod install"
+    "macos": "RN_PLATFORM=macos react-native run-macos --mode Debug",
+    "build:macos": "RN_PLATFORM=macos react-native build-macos --mode Debug",
+    "pods:ios": "cd ios && pod install",
+    "pods:macos": "cd macos && pod install",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "react": "19.1.0",
-    "react-native": "0.81.0",
-    "react-native-camera-kit": "link:../",
-    "react-native-image-picker": "^7.1.2"
+    "react": "19.2.0",
+    "react-native": "0.83.10",
+    "react-native-image-picker": "^7.1.2",
+    "react-native-macos": "0.83.0",
+    "react-native-camera-kit-no-google": "link:../"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
@@ -25,18 +29,20 @@
     "@react-native-community/cli": "20.0.0",
     "@react-native-community/cli-platform-android": "20.0.0",
     "@react-native-community/cli-platform-ios": "20.0.0",
-    "@react-native/babel-preset": "0.81.0",
-    "@react-native/eslint-config": "0.81.0",
-    "@react-native/metro-config": "0.81.0",
-    "@react-native/typescript-config": "0.81.0",
-    "@types/react": "^19.1.0",
-    "@types/react-test-renderer": "^19.1.0",
+    "@react-native/babel-preset": "0.83.10",
+    "@react-native/eslint-config": "0.83.10",
+    "@react-native/metro-config": "0.83.10",
+    "@react-native/typescript-config": "0.83.10",
+    "@types/react": "^19.2.0",
+    "@types/react-test-renderer": "^19.2.0",
     "eslint": "^8.19.0",
     "prettier": "2.8.8",
-    "react-test-renderer": "19.1.0",
-    "typescript": "^5.8.3"
+    "react-test-renderer": "19.2.0",
+    "typescript": "^5.8.3",
+    "@react-native-community/cli-platform-apple": "20.0.0"
   },
   "engines": {
-    "node": ">=18"
-  }
+    "node": ">=20.19.4"
+  },
+  "packageManager": "yarn@1.22.22"
 }

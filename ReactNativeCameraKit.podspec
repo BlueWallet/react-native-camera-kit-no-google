@@ -10,17 +10,21 @@ Pod::Spec.new do |s|
 
   s.authors      = "CameraKit"
   s.homepage     = "https://github.com/BlueWallet/react-native-camera-kit-no-google"
-  s.platform     = :ios, "15.0"
+  s.platforms    = { :ios => "15.0", :osx => "14.0" }
 
   s.source       = { :git => "https://github.com/BlueWallet/react-native-camera-kit-no-google.git", :tag => "v#{s.version}" }
-  s.source_files = [
+  s.ios.source_files = [
     # Exclude .h files as they cause Swift compiler to treat them as C files, but they are C++
     # See https://github.com/facebook/react-native/issues/45424#issuecomment-2354737063
     "ios/ReactNativeCameraKit/*.{m,swift,mm}",
     "ios/generated/rncamerakit_specs/*.{m,mm,cpp}",
   ]
 
-  s.private_header_files = 'ios/ReactNativeCameraKit/ReactNativeCameraKit-Swift.pre.h'
+  s.osx.source_files = 'macos/ReactNativeCameraKit/*.{m,mm,swift}'
+  s.osx.frameworks = 'AppKit', 'AVFoundation', 'Vision', 'ImageIO'
+  s.swift_version = '5.0'
+
+  s.ios.private_header_files = 'ios/ReactNativeCameraKit/ReactNativeCameraKit-Swift.pre.h'
 
   if ENV['USE_FRAMEWORKS']
     exisiting_flags = s.attributes_hash["compiler_flags"]

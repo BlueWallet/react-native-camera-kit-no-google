@@ -1,9 +1,9 @@
 import type React from 'react';
 import { useCallback, useState, useRef, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Image, Animated, ScrollView, type LayoutChangeEvent } from 'react-native';
-import Camera from '../../src/Camera';
-import { type CameraApi, CameraType, type CaptureData } from '../../src/types';
-import { Orientation } from '../../src';
+import {Camera} from 'react-native-camera-kit-no-google';
+import { type CameraApi, CameraType, type CaptureData } from 'react-native-camera-kit-no-google';
+import { Orientation } from 'react-native-camera-kit-no-google';
 import {
   type FaceData,
   type FaceDetectionInstallState,
@@ -357,7 +357,6 @@ const CameraExample = ({ onBack, stress }: { onBack: () => void; stress?: boolea
             }}
             torchMode={torchMode ? 'on' : 'off'}
             shutterPhotoSound
-            iOsSleepBeforeStarting={100}
             maxPhotoQualityPrioritization="speed"
             faceDetectionEnabled={faceDetection}
             faceDetectionThrottleMs={50}
