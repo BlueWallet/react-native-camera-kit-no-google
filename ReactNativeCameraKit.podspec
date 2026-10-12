@@ -9,10 +9,10 @@ Pod::Spec.new do |s|
   s.license      = "MIT"
 
   s.authors      = "CameraKit"
-  s.homepage     = "https://github.com/limpbrains/react-native-camera-kit-no-google"
+  s.homepage     = "https://github.com/BlueWallet/react-native-camera-kit-no-google"
   s.platform     = :ios, "15.0"
 
-  s.source       = { :git => "https://github.com/limpbrains/react-native-camera-kit-no-google.git", :tag => "v#{s.version}" }
+  s.source       = { :git => "https://github.com/BlueWallet/react-native-camera-kit-no-google.git", :tag => "v#{s.version}" }
   s.source_files = [
     # Exclude .h files as they cause Swift compiler to treat them as C files, but they are C++
     # See https://github.com/facebook/react-native/issues/45424#issuecomment-2354737063

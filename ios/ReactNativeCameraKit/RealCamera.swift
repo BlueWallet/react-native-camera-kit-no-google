@@ -56,8 +56,16 @@ class RealCamera: NSObject, CameraProtocol, AVCaptureMetadataOutputObjectsDelega
 
     // orientation
     private var deviceOrientation = UIDeviceOrientation.unknown
-    private var motionManager: CMMotionManager?
     private var orientationObserver: NSObjectProtocol?
+
+    #if !targetEnvironment(macCatalyst)
+        // One CMMotionManager for the whole app, deliberately never deallocated. Destroying one
+        // races CoreMotion's own source cancellation: the dealloc blocks in the caller while
+        // CoreMotion's run loop thread and the dispatch source dispose handlers touch memory the
+        // cancellation has already freed.
+        private static let motionManager = CMMotionManager()
+        private static let motionQueue = OperationQueue()
+    #endif
 
     // KVO observation
     private var adjustingFocusObservation: NSKeyValueObservation?
@@ -103,7 +111,7 @@ class RealCamera: NSObject, CameraProtocol, AVCaptureMetadataOutputObjectsDelega
         }
 
         #if !targetEnvironment(macCatalyst)
-            motionManager?.stopAccelerometerUpdates()
+            Self.motionManager.stopAccelerometerUpdates()
 
             NotificationCenter.default.removeObserver(
                 self, name: UIDevice.orientationDidChangeNotification, object: UIDevice.current)
@@ -127,7 +135,7 @@ class RealCamera: NSObject, CameraProtocol, AVCaptureMetadataOutputObjectsDelega
             self.cameraPreview.session = self.session
             self.cameraPreview.previewLayer.videoGravity = .resizeAspect
 
-            self.initializeMotionManager()
+            self.startMotionUpdates()
 
             // Setup the capture session.
             // In general, it is not safe to mutate an AVCaptureSession or any of its inputs, outputs, or connections from multiple threads at the same time.
@@ -187,9 +195,9 @@ class RealCamera: NSObject, CameraProtocol, AVCaptureMetadataOutputObjectsDelega
         self.update(zoom: self.zoom)
     }
 
-    func update(zoom z: Double?) {
+    func update(zoom zoomValue: Double?) {
         sessionQueue.async {
-            self.zoom = z == -1 ? nil : z
+            self.zoom = zoomValue == -1 ? nil : zoomValue
             guard let videoDevice = self.videoDeviceInput?.device else { return }
             guard let zoomWithNil = self.zoom else { return }
 
@@ -576,13 +584,13 @@ class RealCamera: NSObject, CameraProtocol, AVCaptureMetadataOutputObjectsDelega
                 fromMetadataOutputRect: CGRect(x: 0, y: 0, width: 1, height: 1))
             guard frameRect.width > 0, frameRect.height > 0 else { return }
 
-            let converted = payloads.map { p -> FaceDetectionPayload in
-                let layerX = frameRect.origin.x + p.boundsX * frameRect.width
-                let layerY = frameRect.origin.y + p.boundsY * frameRect.height
-                let layerW = p.boundsWidth * frameRect.width
-                let layerH = p.boundsHeight * frameRect.height
+            let converted = payloads.map { payload -> FaceDetectionPayload in
+                let layerX = frameRect.origin.x + payload.boundsX * frameRect.width
+                let layerY = frameRect.origin.y + payload.boundsY * frameRect.height
+                let layerW = payload.boundsWidth * frameRect.width
+                let layerH = payload.boundsHeight * frameRect.height
                 return FaceDetectionPayload(
-                    id: p.id, yaw: p.yaw, pitch: p.pitch, roll: p.roll,
+                    id: payload.id, yaw: payload.yaw, pitch: payload.pitch, roll: payload.roll,
                     boundsX: Double(layerX / layerSize.width),
                     boundsY: Double(layerY / layerSize.height),
                     boundsWidth: Double(layerW / layerSize.width),
@@ -800,14 +808,15 @@ class RealCamera: NSObject, CameraProtocol, AVCaptureMetadataOutputObjectsDelega
 
     // MARK: - Private device orientation from accelerometer
 
-    private func initializeMotionManager() {
+    private func startMotionUpdates() {
         #if !targetEnvironment(macCatalyst)
-            motionManager = CMMotionManager()
-            motionManager?.accelerometerUpdateInterval = 0.2
-            motionManager?.gyroUpdateInterval = 0.2
-            motionManager?.startAccelerometerUpdates(
-                to: OperationQueue(),
-                withHandler: { (accelerometerData, error) -> Void in
+            Self.motionManager.accelerometerUpdateInterval = 0.2
+            Self.motionManager.gyroUpdateInterval = 0.2
+            Self.motionManager.startAccelerometerUpdates(
+                to: Self.motionQueue,
+                withHandler: { [weak self] (accelerometerData, error) -> Void in
+                    guard let self else { return }
+
                     guard error == nil else {
                         print("\(error!)")
                         return

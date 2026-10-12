@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/limpbrains/react-native-camera-kit-no-google/blob/master/LICENSE">
+  <a href="https://github.com/BlueWallet/react-native-camera-kit-no-google/blob/master/LICENSE">
     <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="React Native Camera Kit is released under the MIT license." />
   </a>
   <a href="https://www.npmjs.org/package/react-native-camera-kit-no-google">

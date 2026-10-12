@@ -54,8 +54,8 @@ function isFacingCamera(face: FaceData): boolean {
 
 function CaptureButton({ onPress, children }: { onPress: () => void; children?: React.ReactNode }) {
   const w = 80;
-  const brdW = 4;
-  const spc = 6;
+  const brdW = 3.5;
+  const spc = 2.5;
   const cInner = 'white';
   const cOuter = 'white';
   return (
